@@ -11,3 +11,15 @@
 *.lai
 *.la
 *.a
+
+# Compiled executable
+/nael
+
+# Cmake stuff
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+
+# Vim stuff
+**~

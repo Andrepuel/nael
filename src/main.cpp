@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <nael/matrix.hpp>
 #include <nael/opengl.hpp>
 
@@ -20,8 +18,8 @@ int main() {
 		context.beginFrame();
 
 		using nael::Degree;
-		Matrix3 boxPos = Matrix3::rotate(Degree(30))*Matrix3::translate(5,5)*Matrix3::scale(20,20);
-		//TODO draw box
+		Matrix3 boxPos = Matrix3::translate(-20,40)*Matrix3::rotate(Degree(30))*Matrix3::scale(20,20);
+		context.drawBox(camera,boxPos);
 
 		context.endFrame();
 		context.delay(1000/60.0);

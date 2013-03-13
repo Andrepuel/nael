@@ -3,6 +3,11 @@
 
 namespace nael {
 
+const Matrix3& Matrix3::identity() {
+	static Matrix3 result(1,0,0, 0,1,0, 0,0,1);
+	return result;
+}
+
 Matrix3 Matrix3::scale(float sx, float sy) {
 	return Matrix3(sx,0,0,
 			0,sy,0,
@@ -37,20 +42,19 @@ Matrix3::Matrix3(float r0c0, float r0c1, float r0c2,
 	m[5] = r2c1;
 	m[6] = r0c2;
 	m[7] = r1c2;
-	m[9] = r2c2;
+	m[8] = r2c2;
 }
 
-#define __elem(COL,ROW,COL_SIZE) (ROW*COL_SIZE+COL)
-#define _elem(COL,ROW) __v(COL,ROW,3)
+#define __elem(ROW,COL,LINE_SIZE) (ROW+LINE_SIZE*COL)
 
 #define _multiply(left,right,dest,left_lines,left_cols_right_lines,right_cols) \
 	for( unsigned int eachLine = 0; eachLine < left_lines; ++eachLine ) { \
 		for( unsigned int eachCol = 0; eachCol < right_cols; ++eachCol ) {\
-			dest[ __elem(eachLine,eachCol,right_cols) ] = 0.0; \
+			dest[ __elem(eachLine,eachCol,left_lines) ] = 0.0; \
 			for( unsigned int eachElement = 0; eachElement < left_cols_right_lines; ++eachElement ) { \
-				dest[ __elem(eachLine,eachCol,right_cols) ] += \
-					left[ __elem(eachLine,eachElement,left_cols_right_lines) ] * \
-					right[ __elem(eachElement,eachCol,right_cols) ]; \
+				dest[ __elem(eachLine,eachCol,left_lines) ] += \
+					left[ __elem(eachLine,eachElement,left_lines) ] * \
+					right[ __elem(eachElement,eachCol,left_cols_right_lines) ]; \
 			} \
 		} \
 	}

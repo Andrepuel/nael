@@ -7,9 +7,7 @@ namespace nael {
 
 class Matrix3 {
 public:
-	static const Matrix3& getIdentity();
-
-public:
+	static const Matrix3& identity();
 	static Matrix3 scale(float sx, float sy);
 	static Matrix3 rotate(const Angle& angle);
 	static Matrix3 translate(float tx, float ty);

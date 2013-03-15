@@ -2,6 +2,7 @@
 *.slo
 *.lo
 *.o
+*.obj
 
 # Compiled Dynamic libraries
 *.so
@@ -14,6 +15,22 @@
 
 # Compiled executable
 /nael
+/Debug
+/thirdparty
+
+#VSProjectFiles
+*.vcxproj
+*.filters
+*.opensdf
+*.sdf
+*.suo
+*.sln
+
+#LOG
+*.log
+*.tlog
+
+*.lastbuildstate
 
 # Cmake stuff
 CMakeCache.txt

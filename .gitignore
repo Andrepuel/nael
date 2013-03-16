@@ -31,6 +31,8 @@
 *.tlog
 
 *.lastbuildstate
+*.unsuccessfulbuild
+*.cache
 
 # Cmake stuff
 CMakeCache.txt

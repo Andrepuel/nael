@@ -220,6 +220,11 @@ void ProgramContext::setMatrix(const std::string& name, const Matrix3& mat) {
 	matrices.insert( std::make_pair(name,mat) );
 }
 
+void ProgramContext::setBool(const std::string& name, bool value ) {
+	assert( bools.count(name) == 0 );
+	bools.insert( std::make_pair(name,value) );
+}
+
 void ProgramContext::setTexture(const std::string& name, const std::shared_ptr<Texture>& texture) {
 	assert( textures.count(name) == 0 );
 	textures.insert( std::make_pair(name,texture) );
@@ -239,6 +244,13 @@ void ProgramContext::draw() {
 		int location = program->uniformLocation(each->first);
 		if( location < 0 ) continue;
 		glUniformMatrix3fv( location, 1, false, each->second.raw() );
+		checkGlError();
+	}
+	//TODO Remove uniform repetition
+	for( auto each = bools.begin(); each != bools.end(); ++each ) {
+		int location = program->uniformLocation(each->first);
+		if( location < 0 ) continue;
+		glUniform1i(location,each->second);
 		checkGlError();
 	}
 	unsigned textureSlot = 0;

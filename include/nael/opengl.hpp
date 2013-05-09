@@ -104,6 +104,7 @@ public:
 
 	void setMatrix(const std::string& name, const Matrix3& value);
 	void setTexture(const std::string& name, const std::shared_ptr<Texture>&);
+	void setBool(const std::string& name, bool);
 	void setAttribute(const std::string& name, std::shared_ptr<VertexBuffer> );
 
 	void draw();
@@ -111,6 +112,7 @@ private:
 	unsigned mode;
 	std::shared_ptr<Program> program;
 	std::map< std::string,Matrix3 > matrices;
+	std::map< std::string,bool > bools;
 	std::map< std::string,std::shared_ptr<Texture> > textures;
 	std::map< std::string,std::shared_ptr<VertexBuffer> > attributes;
 

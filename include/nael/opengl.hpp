@@ -140,13 +140,23 @@ public:
 
 	void drawBox(const Matrix3& camera, const Matrix3& boxPos);
 
+	/**
+	 * Draws the image of the texture. Initially it is a normalized box (it's centered on the origin and has width and height of 2).
+	 * @param camera The last matrix that will be applied over the drew box
+	 * @param boxPos The first matrix that will be applied over the drw box
+	 * @param texture The texture that will be drew
+	 *
+	 */
+	void drawTexture(const Matrix3& camera, const Matrix3& boxPos, const std::shared_ptr<Texture>& texture);
 private:
+	void _initDefaultShader();
+
 	SDL_Surface* surface;
 	unsigned w;
 	unsigned h;
 
 	std::shared_ptr<Program> defaultProgram;
-	std::shared_ptr<VertexBuffer> boxBuffer;
+	std::shared_ptr<VertexBuffer> boxBuffer, uvBuffer;
 };
 
 };

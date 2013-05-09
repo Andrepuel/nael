@@ -338,32 +338,63 @@ void OpenglContext::endFrame() {
 namespace {
 std::shared_ptr<Program> initDefaultProgram();
 std::shared_ptr<VertexBuffer> initBoxBuffer();
+std::shared_ptr<VertexBuffer> initUvBuffer();
 };
 
 void OpenglContext::drawBox(const Matrix3& camera, const Matrix3& boxPos) {
-	if( defaultProgram.get() == NULL )
-		defaultProgram = initDefaultProgram();
-	if( boxBuffer.get() == NULL )
-		boxBuffer = initBoxBuffer();
+	_initDefaultShader();
 
 	ProgramContext context(defaultProgram,ProgramContext::QUADS);
 	context.setMatrix("camera",camera);
 	context.setMatrix("model",boxPos);
+	context.setBool("has_texture",false);
 	context.setAttribute("vertex",boxBuffer);
 	context.draw();
+}
+
+void OpenglContext::drawTexture(const Matrix3& camera, const Matrix3& boxPos, const std::shared_ptr<Texture>& texture) {
+	_initDefaultShader();
+
+	ProgramContext context(defaultProgram,ProgramContext::QUADS);
+	context.setMatrix("camera",camera);
+	context.setMatrix("model",boxPos);
+	context.setBool("has_texture",true);
+	context.setTexture("texture",texture);
+	context.setAttribute("vertex",boxBuffer);
+	context.setAttribute("uv",uvBuffer);
+	context.draw();
+};
+
+void OpenglContext::_initDefaultShader() {
+	if( defaultProgram.get() == NULL )
+		defaultProgram = initDefaultProgram();
+	if( boxBuffer.get() == NULL )
+		boxBuffer = initBoxBuffer();
+	if( uvBuffer.get() == NULL )
+		uvBuffer = initUvBuffer();
 }
 
 namespace {
 const char* default_vert = 	"uniform mat3 camera;\n"
 				"uniform mat3 model;\n"
 				"attribute vec2 vertex;\n"
+				"attribute vec2 uv;\n"
+				"varying vec2 texture_pos;\n"
 				"void main(void) {\n"
 				"	vec3 vertexLine = camera*model*vec3(vertex,1);\n"
 				"	gl_Position = vec4(vertexLine.x,vertexLine.y,0,vertexLine.z);\n"
+				"	texture_pos = uv;\n"
 				"}\n";
 
-const char* default_frag =	"void main(void) {\n"
-				"	gl_FragColor = vec4(0,0,0,1);\n"
+const char* default_frag =	"uniform bool has_texture;\n"
+				"uniform sampler2D texture;\n"
+				"varying vec2 texture_pos;\n"
+				"void main(void) {\n"
+				"	if( has_texture ) {\n"
+				"		gl_FragColor = texture2D(texture,texture_pos);\n"
+				"	} else {\n"
+				"		gl_FragColor = vec4(0,0,0,1);\n"
+				"	}"
 				"}\n";
 
 std::shared_ptr<Program> initDefaultProgram() {
@@ -380,6 +411,12 @@ std::shared_ptr<VertexBuffer> initBoxBuffer() {
 	return box_vbo;
 }
 
+std::shared_ptr<VertexBuffer> initUvBuffer() {
+	std::shared_ptr<VertexBuffer> uv_vbo(new VertexBuffer(4,2));
+	static const float data[4*2] = {0,0, 1,0, 1,1, 0,1};
+	uv_vbo->data(data);
+	return uv_vbo;
 }
+}//namespace
 
 };

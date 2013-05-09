@@ -1,4 +1,5 @@
 #include <nael/opengl.hpp>
+#include <nael/image.hpp>
 #include <SDL.h>
 #include <GL/glew.h>
 #include <stdexcept>
@@ -179,6 +180,32 @@ void VertexBuffer::bindTo(unsigned location) {
 
 // --------------------
 
+Texture::Texture(const Image& image) {
+	glGenTextures(1,&id);
+	checkGlError();
+
+	GLint format = GL_RGBA;
+	glBindTexture(GL_TEXTURE_2D,id);
+	glPixelStorei(GL_PACK_ALIGNMENT,1);
+	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+	glTexImage2D(GL_TEXTURE_2D,0,format,image.w(),image.h(),0,format,GL_UNSIGNED_BYTE,image.bytes());
+//	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+//	glGenerateMipmap(GL_TEXTURE_2D);
+	checkGlError();	
+}
+
+Texture::~Texture() {
+	glDeleteTextures(1,&id);
+}
+
+void Texture::bind() {
+	glBindTexture(GL_TEXTURE_2D,id);
+	checkGlError();
+}
+
+// --------------------
+
 unsigned ProgramContext::QUADS = GL_QUADS;
 ProgramContext::ProgramContext(std::shared_ptr<Program> program, unsigned mode)
 :mode(mode),program(program)
@@ -191,6 +218,11 @@ ProgramContext::~ProgramContext() {
 void ProgramContext::setMatrix(const std::string& name, const Matrix3& mat) {
 	assert( matrices.count(name) == 0 );
 	matrices.insert( std::make_pair(name,mat) );
+}
+
+void ProgramContext::setTexture(const std::string& name, const std::shared_ptr<Texture>& texture) {
+	assert( textures.count(name) == 0 );
+	textures.insert( std::make_pair(name,texture) );
 }
 
 void ProgramContext::setAttribute(const std::string& name, std::shared_ptr<VertexBuffer> vbo) {
@@ -208,6 +240,15 @@ void ProgramContext::draw() {
 		if( location < 0 ) continue;
 		glUniformMatrix3fv( location, 1, false, each->second.raw() );
 		checkGlError();
+	}
+	unsigned textureSlot = 0;
+	for( auto each = textures.begin(); each != textures.end(); ++each ) {
+		int location = program->uniformLocation(each->first);
+		if( location < 0 ) continue;
+		glActiveTexture(GL_TEXTURE0 + textureSlot);
+		each->second->bind();
+		glUniform1i(location,textureSlot);
+		++textureSlot;
 	}
 	checkGlError();
 	std::vector<int> attribs;

@@ -1,6 +1,7 @@
 #ifndef __OPENGL_HPP_0918240129481204810845_
 #define __OPENGL_HPP_0918240129481204810845_
 
+#include <nael/misc.hpp>
 #include <nael/matrix.hpp>
 #include <memory>
 #include <vector>
@@ -9,6 +10,7 @@
 
 class SDL_Surface;
 namespace nael {
+class Image;
 
 class Shader {
 public:
@@ -79,6 +81,20 @@ private:
 	unsigned _dimension;
 };
 
+class Texture {
+public:
+	Texture(const Image&);
+	DELETE_METHOD( Texture(const Texture&) );
+	Texture(Texture&& move);
+	virtual ~Texture();
+
+	DELETE_METHOD(Texture& operator=(const Texture& that));
+
+	void bind();
+private:
+	unsigned id;
+};
+
 class ProgramContext {
 public:
 	static unsigned QUADS;
@@ -87,6 +103,8 @@ public:
 	virtual ~ProgramContext();
 
 	void setMatrix(const std::string& name, const Matrix3& value);
+	void setTexture(const std::string& name, const std::shared_ptr<Texture>&);
+	void setBool(const std::string& name, bool);
 	void setAttribute(const std::string& name, std::shared_ptr<VertexBuffer> );
 
 	void draw();
@@ -94,6 +112,8 @@ private:
 	unsigned mode;
 	std::shared_ptr<Program> program;
 	std::map< std::string,Matrix3 > matrices;
+	std::map< std::string,bool > bools;
+	std::map< std::string,std::shared_ptr<Texture> > textures;
 	std::map< std::string,std::shared_ptr<VertexBuffer> > attributes;
 
 };
@@ -120,13 +140,23 @@ public:
 
 	void drawBox(const Matrix3& camera, const Matrix3& boxPos);
 
+	/**
+	 * Draws the image of the texture. Initially it is a normalized box (it's centered on the origin and has width and height of 2).
+	 * @param camera The last matrix that will be applied over the drew box
+	 * @param boxPos The first matrix that will be applied over the drw box
+	 * @param texture The texture that will be drew
+	 *
+	 */
+	void drawTexture(const Matrix3& camera, const Matrix3& boxPos, const std::shared_ptr<Texture>& texture);
 private:
+	void _initDefaultShader();
+
 	SDL_Surface* surface;
 	unsigned w;
 	unsigned h;
 
 	std::shared_ptr<Program> defaultProgram;
-	std::shared_ptr<VertexBuffer> boxBuffer;
+	std::shared_ptr<VertexBuffer> boxBuffer, uvBuffer;
 };
 
 };

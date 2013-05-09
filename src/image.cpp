@@ -14,7 +14,7 @@ Image::Image(const std::string& path) {
 	for( unsigned eachRow = 0; eachRow<_h;++eachRow ) {
 		auto row = image.get_row(eachRow);
 		for( unsigned eachCol = 0; eachCol<_w;++eachCol ) {
-			data[eachCol+eachRow*_w] = row[eachCol];
+			data[eachCol+(_h-eachRow-1)*_w] = row[eachCol];
 		}
 	}
 

@@ -38,11 +38,16 @@ LIST( APPEND DEPS ${PNG_LIBRARIES} )
 
 # nael project
 
-FILE( GLOB_RECURSE sources ${NAEL_ROOT}/src/*.cpp )
+FILE( GLOB_RECURSE sources ${NAEL_ROOT}/src.nael/*.cpp )
 FILE( GLOB_RECURSE headers ${NAEL_ROOT}/include/*.hpp )
 
 source_group_tree("Header Files" include)
-source_group_tree("Source Files" src)
+source_group_tree("Source Files" src.nael)
 
-ADD_EXECUTABLE( nael ${sources} ${headers} )
-TARGET_LINK_LIBRARIES( nael ${DEPS} )
+ADD_LIBRARY( nael ${sources} ${headers} ) 
+LIST( APPEND DEPS nael )
+
+# executables
+
+ADD_EXECUTABLE( nael_test ${NAEL_ROOT}/src/nael.cpp )
+TARGET_LINK_LIBRARIES( nael_test ${DEPS} )

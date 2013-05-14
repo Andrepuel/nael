@@ -13,7 +13,7 @@
 *.a
 
 # Compiled executable
-/nael
+/nael_test
 
 # Cmake stuff
 CMakeCache.txt
@@ -24,3 +24,6 @@ cmake_install.cmake
 # Vim stuff
 **~
 .*.swp
+
+# YCM stuff
+.ycm_*

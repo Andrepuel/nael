@@ -51,3 +51,6 @@ LIST( APPEND DEPS nael )
 
 ADD_EXECUTABLE( nael_test ${NAEL_ROOT}/src/nael.cpp )
 TARGET_LINK_LIBRARIES( nael_test ${DEPS} )
+
+ADD_EXECUTABLE( image_polygon ${NAEL_ROOT}/src/image_polygon.cpp )
+TARGET_LINK_LIBRARIES( image_polygon ${DEPS} )

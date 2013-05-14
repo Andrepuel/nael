@@ -14,6 +14,7 @@
 
 # Compiled executable
 /nael_test
+/image_polygon
 
 # Cmake stuff
 CMakeCache.txt

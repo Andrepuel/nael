@@ -8,7 +8,7 @@
 #include <string>
 #include <map>
 
-class SDL_Surface;
+struct SDL_Surface;
 namespace nael {
 class Image;
 
@@ -120,6 +120,10 @@ private:
 
 // cut here -----------------------------------------------------------
 
+//Defined at event.hpp
+struct MouseEvent;
+struct KeyboardEvent;
+
 class OpenglContext {
 public:
 	OpenglContext(unsigned width, unsigned height);
@@ -148,6 +152,22 @@ public:
 	 *
 	 */
 	void drawTexture(const Matrix3& camera, const Matrix3& boxPos, const std::shared_ptr<Texture>& texture);
+
+protected:
+	/**
+	 * User may override this function to handle keyboard events.
+	 * @Note KeyboardEvent definition is available at nael/event.hpp
+	 */
+	virtual void keyboardCallback(const KeyboardEvent&) {
+	}
+	
+	/**
+	 * User may override this function to handle mouse event.
+	 * @Note MouseEvent definition is available at nael/event.hpp
+	 */
+	virtual void mouseCallback(const MouseEvent&) {
+	}
+
 private:
 	void _initDefaultShader();
 

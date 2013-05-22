@@ -1,5 +1,6 @@
 #include <nael/opengl.hpp>
 #include <nael/image.hpp>
+#include <nael/event.hpp>
 #include <SDL.h>
 #include <GL/glew.h>
 #include <stdexcept>
@@ -310,12 +311,50 @@ OpenglContext::~OpenglContext() {
 	SDL_Quit();
 }
 
+// Provides the hidden keyMap() function
+#include "sdl_key_map.ipp"
 bool OpenglContext::poolEvent() {
 	SDL_Event event;
+
+	MouseEvent m_event;
+	KeyboardEvent k_event;
+
 	while( SDL_PollEvent(&event) ) {
 		switch( event.type ) {
 		case SDL_QUIT:
 			return true;
+		break;
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+			m_event.type = event.type == SDL_MOUSEBUTTONDOWN ? MouseEvent::PRESS : MouseEvent::RELEASE;
+			if( event.button.button == SDL_BUTTON_LEFT ) {
+				m_event.button = MouseEvent::LEFT_BUTTON;
+			} else if( event.button.button == SDL_BUTTON_RIGHT ) {
+				m_event.button = MouseEvent::RIGHT_BUTTON;
+			} else if( event.button.button == SDL_BUTTON_MIDDLE ) {
+				m_event.button = MouseEvent::MIDDLE_BUTTON;
+			} else {
+				break;
+			}
+			m_event.posX = event.button.x;
+			m_event.posY = event.button.y;
+			mouseCallback(m_event);
+		break;
+		case SDL_MOUSEMOTION:
+			m_event.type = MouseEvent::MOVE;
+			m_event.posX = event.button.x;
+			m_event.posY = event.button.y;
+			mouseCallback(m_event);
+		break;
+		case SDL_KEYDOWN:
+		case SDL_KEYUP:
+			k_event.type = event.type == SDL_KEYDOWN ? KeyboardEvent::KEYDOWN : KeyboardEvent::KEYUP;
+			k_event.key = keyMap(event.key.keysym.sym);
+			k_event.modifiers = KeyboardEvent::NONE;
+			if( event.key.keysym.mod & KMOD_SHIFT ) k_event.modifiers |= KeyboardEvent::SHIFT;
+			if( event.key.keysym.mod & KMOD_CTRL ) k_event.modifiers |= KeyboardEvent::CONTROL;
+			if( event.key.keysym.mod & KMOD_ALT ) k_event.modifiers |= KeyboardEvent::ALT;
+			keyboardCallback(k_event);
 		break;
 		}
 	}
